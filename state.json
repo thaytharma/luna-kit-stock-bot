@@ -6,7 +6,7 @@
       "brokenRuns": 0,
       "brokenWarningSent": false,
       "restockNotified": false,
-      "lastCheckedAt": "2026-10-02T02:18:02.707Z",
+      "lastCheckedAt": "2026-10-02T08:38:52.529Z",
       "title": "Ombyggingssett til Luna™ babyseng 140 cm – Hvit",
       "price": "1.399,00 NOK"
     },
@@ -15,9 +15,25 @@
       "brokenRuns": 0,
       "brokenWarningSent": false,
       "restockNotified": false,
-      "lastCheckedAt": "2026-10-02T02:18:02.707Z",
+      "lastCheckedAt": "2026-10-02T08:38:52.529Z",
       "title": "Leander Luna Ombygningssæt Til Babyseng - 140 cm - Hvid",
       "price": "899,95 kr."
+    }
+  },
+  "searches": {
+    "https://www.finn.no/recommerce/forsale/search?q=%22leander+luna%22&sort=PUBLISHED_DESC": {
+      "seeded": true,
+      "seenIds": [
+        "437971051",
+        "471924437",
+        "472519364",
+        "474540480",
+        "475013644",
+        "476568797"
+      ],
+      "brokenRuns": 0,
+      "brokenWarningSent": false,
+      "lastCheckedAt": "2026-10-02T08:38:52.529Z"
     }
   }
 }
