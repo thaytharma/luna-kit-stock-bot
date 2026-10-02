@@ -14,6 +14,10 @@ at both shops that sell it:
 kids-world's customer service confirmed the kit is on their replenishment list
 with no ETA. Both are sold out as of August 2026.
 
+It also watches **second-hand ads on [finn.no](https://www.finn.no)** and pushes
+an alert when a new Leander Luna listing appears — see
+[finn.no search watching](#finnno-search-watching).
+
 ## How it works
 
 The product pages are server-rendered, so no headless browser is needed. Each
@@ -109,6 +113,45 @@ Each URL is tracked independently, so the two shops notify separately.
 notification is only recorded as sent if at least one channel accepted it —
 otherwise it retries on the next run.
 
+### finn.no search watching
+
+A second-hand marketplace has no page that comes "back in stock", so finn.no is
+watched differently: the bot reads a saved search and alerts on any ad id it has
+not seen before.
+
+Default search: [`"leander luna"`, newest first](https://www.finn.no/recommerce/forsale/search?q=%22leander+luna%22&sort=PUBLISHED_DESC).
+It is broader than the kit on purpose — a used cot sold with its conversion kit
+is just as useful. The quotes matter: unquoted, finn.no also returns every
+Leander cradle.
+
+The search page is server-rendered and embeds its results as base64 JSON in
+`<script data-react-query-state>`. Each ad carries an id, heading, price and URL.
+
+> **finn.no pads results with "semantic" matches.** A search for
+> `luna ombyggingssett` returned 53 ads, 51 of them hole saws, wool sweaters and
+> similar, tagged `metadata.source: "semantic"`. Those are dropped; only ads
+> tagged `keyword` or `both` count. This is pinned by a test on the real page.
+
+| Situation | Action |
+| --- | --- |
+| first successful read of a search | remember every ad already listed, silent |
+| one new ad | 🔍 priority-5 push + email, links to the ad |
+| several new ads | one alert listing up to 5, links to the search |
+| ads disappear (sold / removed) | silent; their ids are kept so a relisting doesn't re-alert |
+| 3× consecutive unreadable page / fetch failure | ⚠️ one "bot may be broken" alert |
+
+A page without the search data throws instead of reading as "no hits", so a
+layout change shows up as a broken-bot alert. If no channel accepts an alert, the
+new ads are not marked as seen and the next run alerts again.
+
+Only the first page of results is read, which is why the search is sorted
+newest first. If you set your own search, keep `sort=PUBLISHED_DESC`.
+
+**Not supported: Amazon and eBay.** Both refuse plain requests (Amazon answers
+`503` with a CAPTCHA, eBay `403`), and GitHub Actions IP addresses fare worse.
+eBay could be added through its official Browse API with a free developer key.
+Amazon has no practical option.
+
 ## Setup
 
 The bot runs on GitHub Actions every 15 minutes. Configure these in
@@ -134,6 +177,7 @@ and one channel failing never silences the other.
 | Variable | Notes |
 | --- | --- |
 | `PRODUCT_URLS` | Comma-separated product URLs. **Overrides the defaults entirely** — if you set it, list every URL you want watched. Leave it unset to watch both shops' Luna kit. |
+| `SEARCH_URLS` | Comma-separated finn.no search URLs. **Overrides the default search entirely.** Build the search on finn.no (filters like price or location carry over in the URL) and copy the address. Keep `sort=PUBLISHED_DESC`. |
 | `NTFY_SERVER` | Defaults to `https://ntfy.sh`. Set only if self-hosting. |
 
 Only kids-world.dk and csmegastore.no URLs can be parsed. A URL from any other
@@ -159,9 +203,9 @@ state. Locally the same thing is `TEST_NOTIFICATION=1 pnpm check`.
 
 ```sh
 pnpm install
-pnpm test         # 153 tests
+pnpm test         # 185 tests
 pnpm typecheck
-pnpm check        # one check run against both live sites
+pnpm check        # one check run against the live sites
 ```
 
 Put credentials in a `.env` file (gitignored) and run:

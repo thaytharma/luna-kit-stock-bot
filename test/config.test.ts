@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { DEFAULT_URLS, loadConfig } from '../src/config.js';
+import { DEFAULT_SEARCH_URLS, DEFAULT_URLS, loadConfig } from '../src/config.js';
 import { fetchPage } from '../src/fetch.js';
 
 describe('loadConfig', () => {
@@ -16,6 +16,23 @@ describe('loadConfig', () => {
   it('accepts a comma-separated list and trims it', () => {
     const config = loadConfig({ PRODUCT_URLS: ' https://a.dk/x , https://b.dk/y ,, ' });
     expect(config.urls).toEqual(['https://a.dk/x', 'https://b.dk/y']);
+  });
+
+  it('watches second-hand Luna ads on finn.no by default, as a phrase search, newest first', () => {
+    expect(loadConfig({}).searchUrls).toEqual(DEFAULT_SEARCH_URLS);
+    const url = new URL(DEFAULT_SEARCH_URLS[0]!);
+    expect(url.hostname).toBe('www.finn.no');
+    expect(url.searchParams.get('q')).toBe('"leander luna"');
+    expect(url.searchParams.get('sort')).toBe('PUBLISHED_DESC');
+  });
+
+  it('replaces the default searches with SEARCH_URLS, trimmed', () => {
+    const config = loadConfig({ SEARCH_URLS: ' https://www.finn.no/a , ,https://www.finn.no/b' });
+    expect(config.searchUrls).toEqual(['https://www.finn.no/a', 'https://www.finn.no/b']);
+  });
+
+  it('treats an empty SEARCH_URLS from Actions as unset', () => {
+    expect(loadConfig({ SEARCH_URLS: '' }).searchUrls).toEqual(DEFAULT_SEARCH_URLS);
   });
 
   it('disables both channels when nothing is configured', () => {

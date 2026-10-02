@@ -2,7 +2,7 @@ import type { ProductSnapshot } from './parse.js';
 import type { ProductState } from './state.js';
 
 export interface Notification {
-  kind: 'restock' | 'broken';
+  kind: 'restock' | 'listing' | 'broken';
   title: string;
   body: string;
   url: string;

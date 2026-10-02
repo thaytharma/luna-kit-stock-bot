@@ -3,6 +3,8 @@ import type { NtfyConfig } from './notify/ntfy.js';
 
 export interface Config {
   urls: string[];
+  /** Saved marketplace searches, alerted on when a new listing appears. */
+  searchUrls: string[];
   statePath: string;
   ntfy: NtfyConfig | null;
   email: EmailConfig | null;
@@ -14,6 +16,17 @@ export const DEFAULT_URLS = [
   // a ?sq= search-tracking parameter, but the URL is the state key, so keep the
   // canonical one.
   'https://www.csmegastore.no/i/24512506/ombyggingssett-til-luna-babyseng-140-cm-hvit',
+];
+
+/**
+ * Second-hand Leander Luna ads on finn.no, newest first. Broader than the kit on
+ * purpose: a used cot sold together with its conversion kit is just as useful.
+ * The quotes make it a phrase search — unquoted, finn.no also returns every
+ * Leander cradle. Newest-first keeps fresh ads on the first page, which is all
+ * that is read.
+ */
+export const DEFAULT_SEARCH_URLS = [
+  'https://www.finn.no/recommerce/forsale/search?q=%22leander+luna%22&sort=PUBLISHED_DESC',
 ];
 
 const trimmedList = (value: string | undefined): string[] =>
@@ -37,6 +50,7 @@ const str = (value: string | undefined): string | undefined => {
  */
 export function loadConfig(env: NodeJS.ProcessEnv): Config {
   const urls = trimmedList(env.PRODUCT_URLS);
+  const searchUrls = trimmedList(env.SEARCH_URLS);
   const mailTo = trimmedList(env.MAIL_TO);
 
   const smtpHost = str(env.SMTP_HOST);
@@ -61,6 +75,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
 
   return {
     urls: urls.length > 0 ? urls : DEFAULT_URLS,
+    searchUrls: searchUrls.length > 0 ? searchUrls : DEFAULT_SEARCH_URLS,
     statePath: str(env.STATE_PATH) ?? 'state.json',
     ntfy: ntfyTopic
       ? { topic: ntfyTopic, server: str(env.NTFY_SERVER) ?? 'https://ntfy.sh' }

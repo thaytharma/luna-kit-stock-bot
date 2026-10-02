@@ -40,6 +40,7 @@ jobs:
       - name: Check product stock
         env:
           PRODUCT_URLS: ${{ vars.PRODUCT_URLS }}
+          SEARCH_URLS: ${{ vars.SEARCH_URLS }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           NTFY_SERVER: ${{ vars.NTFY_SERVER }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}

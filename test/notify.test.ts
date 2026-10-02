@@ -106,6 +106,12 @@ describe('sendEmail', () => {
     expect(mail.sendMail.mock.calls[0]![0].subject).toBe('⚠️ Stock bot may be broken');
   });
 
+  it('marks a new marketplace listing as urgent, like a restock', async () => {
+    const mail = transport();
+    await sendEmail(config, { ...restock, kind: 'listing', title: 'Ny annonce på finn.no' }, mail);
+    expect(mail.sendMail.mock.calls[0]![0].subject).toBe('🚨 Ny annonce på finn.no');
+  });
+
   it('propagates transport failures', async () => {
     const mail: MailTransport = {
       sendMail: vi.fn(async () => {

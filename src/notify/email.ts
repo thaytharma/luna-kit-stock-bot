@@ -34,7 +34,7 @@ export async function sendEmail(
   notification: Notification,
   transport: MailTransport = createTransport(config),
 ): Promise<void> {
-  const prefix = notification.kind === 'restock' ? '🚨' : '⚠️';
+  const prefix = notification.kind === 'broken' ? '⚠️' : '🚨';
   await transport.sendMail({
     from: config.from,
     to: config.to.join(', '),

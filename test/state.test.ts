@@ -20,6 +20,22 @@ const sample = (): BotState => ({
       title: 'A',
     },
   },
+  searches: {
+    'https://www.finn.no/search?q=b': {
+      seeded: true,
+      seenIds: ['1', '2'],
+      brokenRuns: 0,
+      brokenWarningSent: false,
+      lastCheckedAt: '2026-08-02T20:00:00.000Z',
+    },
+    'https://www.finn.no/search?q=a': {
+      seeded: false,
+      seenIds: [],
+      brokenRuns: 1,
+      brokenWarningSent: false,
+      lastCheckedAt: '2026-08-02T20:00:00.000Z',
+    },
+  },
 });
 
 describe('state serialization', () => {
@@ -30,6 +46,16 @@ describe('state serialization', () => {
   it('sorts products by url so committed diffs stay readable', () => {
     const keys = Object.keys(parseState(serializeState(sample())).products);
     expect(keys).toEqual(['https://example.com/a', 'https://example.com/b']);
+  });
+
+  it('sorts searches by url too', () => {
+    const keys = Object.keys(parseState(serializeState(sample())).searches);
+    expect(keys).toEqual(['https://www.finn.no/search?q=a', 'https://www.finn.no/search?q=b']);
+  });
+
+  it('reads a state file from before search watching existed', () => {
+    const { searches, ...old } = sample();
+    expect(parseState(JSON.stringify(old))).toEqual({ ...old, searches: {} });
   });
 
   it('ends with a newline so git is happy', () => {

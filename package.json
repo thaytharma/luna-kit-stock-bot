@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Watches kids-world.dk and csmegastore.no, and notifies when the Leander Luna conversion kit is back in stock",
+  "description": "Watches kids-world.dk and csmegastore.no for the Leander Luna conversion kit coming back in stock, and finn.no for second-hand Luna ads",
   "scripts": {
     "check": "tsx src/index.ts",
     "test": "vitest run",
